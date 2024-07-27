@@ -1,36 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import LoginPage from "./components/LoginPage";
-import Dashboard from "./components/Dashboard";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import CertificateList from "./components/CertificateList";
 import CreateCertificate from "./components/CreateCertificate";
 import CertificateDetails from "./components/CertificateDetails";
 
-const App = () => {
-  const [user, setUser] = useState(null);
-
+function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage setUser={setUser} />} />
-        <Route
-          path="/dashboard"
-          element={user ? <Dashboard /> : <LoginPage setUser={setUser} />}
-        />
-        <Route
-          path="/create"
-          element={
-            user ? <CreateCertificate /> : <LoginPage setUser={setUser} />
-          }
-        />
-        <Route
-          path="/certificates/:id"
-          element={
-            user ? <CertificateDetails /> : <LoginPage setUser={setUser} />
-          }
-        />
-      </Routes>
+      <div className="App">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<CertificateList />} />
+          <Route path="/create" element={<CreateCertificate />} />
+          <Route path="/certificates/:id" element={<CertificateDetails />} />
+        </Routes>
+      </div>
     </Router>
   );
-};
+}
 
 export default App;

@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const Dashboard = () => {
+const CertificateList = () => {
   const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
     const fetchCertificates = async () => {
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:5000/api/certificates"
+        "http://localhost:5000/api/certificates",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setCertificates(response.data);
     };
@@ -18,7 +24,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h2>Dashboard</h2>
+      <h2>Certificates</h2>
       <Link to="/create">Create Certificate</Link>
       <ul>
         {certificates.map((certificate) => (
@@ -33,4 +39,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default CertificateList;
