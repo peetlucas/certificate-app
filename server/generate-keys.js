@@ -6,7 +6,7 @@ const fs = require("fs");
 const keyStorePath = path.join(__dirname, "keystore");
 const keyStore = new NodeKeyStore(keyStorePath);
 
-const accountId = "example-account.testnet"; // Replace with your NEAR account ID
+const accountId = "peetlucas.testnet"; // Replace with your NEAR account ID
 const networkId = "testnet"; // Replace with your NEAR network ID
 
 async function generateKeyPair() {

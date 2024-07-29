@@ -3,10 +3,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
-const { connect, keyStores } = require("near-api-js"); // Correct import
+const { connect, keyStores } = require("near-api-js");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const os = require("os");
 
 const prisma = new PrismaClient();
 const app = express();
@@ -16,12 +17,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Correct keyStore setup
-const keyStorePath = path.join(__dirname, "keystore");
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(keyStorePath);
+// Use the default NEAR key store location
+const keyStore = new keyStores.UnencryptedFileSystemKeyStore(
+  path.resolve(os.homedir(), ".near-credentials")
+);
 
-const accountId = process.env.NEAR_ACCOUNT_ID;
-const networkId = process.env.NEAR_NETWORK_ID;
+const accountId = process.env.NEAR_ACCOUNT_ID || "peetlucas.testnet";
+const networkId = process.env.NEAR_NETWORK_ID || "testnet";
 
 const setupNear = async () => {
   const near = await connect({
@@ -89,15 +91,28 @@ app.post("/api/login", async (req, res) => {
 // Certificates route
 
 app.post("/api/certificates", async (req, res) => {
+  const username = "testuser";
   const { title, description, recipient, dateIssued } = req.body;
 
   try {
+    // Fetch the user by username
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     const certificate = await prisma.certificate.create({
       data: {
         title,
         description,
         recipient,
         dateIssued: new Date(dateIssued), // Ensure date is in the correct format
+        user: {
+          connect: { id: user.id },
+        },
       },
     });
     res.status(201).json(certificate);
